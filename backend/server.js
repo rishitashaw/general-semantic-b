@@ -13,9 +13,11 @@ connectDB();
 const app = express();
 
 app.use(express.json()); // to accept json data
+
 app.use(cors({
   origin: 'https://www.generalsemantic.com',
 }))
+
 app.get("/", (req, res) => {
   res.send("API Running!");
 });
