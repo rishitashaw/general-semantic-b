@@ -14,9 +14,14 @@ const app = express();
 
 app.use(express.json()); // to accept json data
 
-app.use(cors({
-  origin: 'https://www.generalsemantic.com',
-}))
+// app.use(cors({
+//   origin: 'https://www.generalsemantic.com',
+// }))
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 app.get("/", (req, res) => {
   res.send("API Running!");
