@@ -6,13 +6,16 @@ const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const path = require("path");
+const cors = require("cors");
 
 dotenv.config();
 connectDB();
 const app = express();
 
 app.use(express.json()); // to accept json data
-
+app.use(cors({
+  origin: 'https://www.generalsemantic.com',
+}))
 app.get("/", (req, res) => {
   res.send("API Running!");
 });
