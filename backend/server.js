@@ -14,9 +14,9 @@ const app = express();
 
 app.use(express.json()); // to accept json data
 
-app.use(cors({
-  origin: 'https://www.generalsemantic.com',
-}))
+// app.use(cors({
+//   origin: 'https://www.generalsemantic.com',
+// }))
 
 // app.use((req, res, next) => {
 //   res.header('Access-Control-Allow-Origin', '*');
@@ -63,8 +63,8 @@ const server = app.listen(
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "https://www.generalsemantic.com",
-    credentials: true,
+    origin: "http://localhost:3000",
+    // credentials: true,
   },
 });
 
@@ -89,7 +89,6 @@ io.on("connection", (socket) => {
 
     chat.users.forEach((user) => {
       if (user._id == newMessageRecieved.sender._id) return;
-
       socket.in(user._id).emit("message recieved", newMessageRecieved);
     });
   });

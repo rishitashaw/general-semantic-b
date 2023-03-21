@@ -17,6 +17,11 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    gsPoints: {
+      type: "Number",
+      required: true,
+      default: 0
+    }
   },
   { timestaps: true }
 );
