@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json()); // to accept json data
 
 app.use(cors({
-  origin: `{ process.env.ENDPOINT }`,
+  origin: 'https://www.generalsemantic.com',
 }))
 
 // app.use((req, res, next) => {
@@ -63,7 +63,7 @@ const server = app.listen(
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: `{ process.env.ENDPOINT }`,
+    origin: "https://www.generalsemantic.com",
     // credentials: true,
   },
 });
