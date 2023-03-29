@@ -67,16 +67,26 @@ const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
     origin: "https://www.generalsemantic.com",
+    // origin: "http://localhost:3000/",
     // credentials: true,
   },
 });
 
+let onlineUsers = [];
+
 io.on("connection", (socket) => {
   console.log("Connected to socket.io");
+
   socket.on("setup", (userData) => {
     socket.join(userData._id);
     socket.emit("connected");
+    if (onlineUsers.includes(userData._id) === false) {
+      onlineUsers.push(userData._id)
+      console.log(onlineUsers)
+    };
   });
+
+  socket.emit("onlineUsers", onlineUsers);
 
   socket.on("join chat", (room) => {
     socket.join(room);
@@ -98,6 +108,8 @@ io.on("connection", (socket) => {
 
   socket.off("setup", () => {
     console.log("USER DISCONNECTED");
+    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
     socket.leave(userData._id);
+    io.emit("onlineUsers", onlineUsers);
   });
 });
