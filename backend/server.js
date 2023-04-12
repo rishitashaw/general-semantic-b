@@ -74,7 +74,7 @@ const server = app.listen(
 
 
 const io = new Server(server, {
-  wsEngine: require("ws").Server,
+  // wsEngine: require("ws").Server,
   perMessageDeflate: {
     threshold: 32768
   },
