@@ -74,7 +74,7 @@ const server = app.listen(
 
 
 const io = new Server(server, {
-  // wsEngine: require("ws").Server,
+  wsEngine: require("ws").Server,
   perMessageDeflate: {
     threshold: 32768
   },
@@ -84,13 +84,13 @@ const io = new Server(server, {
     // credentials: true,
   },
   parser,
-  // serveClient: true,
+  serveClient: true,
   pingTimeout: 60000,
-  // upgradeTimeout: 10000,
-  // maxHttpBufferSize: 100000000,
-  // allowUpgrades: true,
-  // transports: "websocket",
-  // allowEIO3: true,
+  upgradeTimeout: 10000,
+  maxHttpBufferSize: 100000000,
+  allowUpgrades: true,
+  transports: "websocket",
+  allowEIO3: true,
   cookie: {
     name: "my-cookie",
     httpOnly: true,
