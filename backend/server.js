@@ -10,7 +10,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-
+const parser = require("socket.io-msgpack-parser")
 // const app = createServer();
 
 dotenv.config();
@@ -62,20 +62,42 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT;
 
+// const server = app.listen(
+//   PORT,
+//   console.log(`Server running on PORT ${ PORT }...`.yellow.bold)
+// );
+
 const server = app.listen(
   PORT,
   console.log(`Server running on PORT ${ PORT }...`.yellow.bold)
 );
 
+
 const io = new Server(server, {
-  wsEngine: require("eiows").Server,
-  pingTimeout: 60000,
+  wsEngine: require("ws").Server,
+  perMessageDeflate: {
+    threshold: 32768
+  },
   cors: {
     origin: "https://www.generalsemantic.com",
     // origin: "http://localhost:3000/",
     // credentials: true,
   },
-  parser
+  parser,
+  serveClient: false,
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  upgradeTimeout: 10000,
+  maxHttpBufferSize: 100000000,
+  allowUpgrades: true,
+  transports: "websocket",
+  allowEIO3: true,
+  cookie: {
+    name: "my-cookie",
+    httpOnly: true,
+    sameSite: "strict",
+    maxAge: 86400
+  }
 });
 
 // const io = require("socket.io")(server, {
@@ -128,3 +150,4 @@ io.on("connection", (socket) => {
     io.emit("onlineUsers", onlineUsers);
   });
 });
+
