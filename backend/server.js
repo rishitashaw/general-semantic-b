@@ -8,6 +8,10 @@ const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+
+// const app = createServer();
 
 dotenv.config();
 connectDB();
@@ -63,14 +67,25 @@ const server = app.listen(
   console.log(`Server running on PORT ${ PORT }...`.yellow.bold)
 );
 
-const io = require("socket.io")(server, {
+const io = new Server(server, {
+  wsEngine: require("eiows").Server,
   pingTimeout: 60000,
   cors: {
     origin: "https://www.generalsemantic.com",
     // origin: "http://localhost:3000/",
     // credentials: true,
   },
+  parser
 });
+
+// const io = require("socket.io")(server, {
+//   pingTimeout: 60000,
+//   cors: {
+//     origin: "https://www.generalsemantic.com",
+//     // origin: "http://localhost:3000/",
+//     // credentials: true,
+//   },
+// });
 
 let onlineUsers = [];
 
