@@ -89,7 +89,7 @@ const io = new Server(server, {
   upgradeTimeout: 10000,
   maxHttpBufferSize: 100000000,
   allowUpgrades: true,
-  transports: "websocket",
+  transports: ['websocket', 'polling'],
   allowEIO3: true,
   cookie: {
     name: "my-cookie",
