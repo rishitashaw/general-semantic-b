@@ -7,11 +7,6 @@ const messageRoutes = require("./routes/messageRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const path = require("path");
 const cors = require("cors");
-const helmet = require("helmet");
-const { createServer } = require("http");
-const { Server } = require("socket.io");
-const parser = require("socket.io-msgpack-parser")
-// const app = createServer();
 
 dotenv.config();
 connectDB();
@@ -19,10 +14,8 @@ const app = express();
 
 app.use(express.json()); // to accept json data
 
-app.use(helmet.frameguard({ action: "SAMEORIGIN" }));
-
 app.use(cors({
-  origin: 'https://www.generalsemantic.com',
+  origin: 'https://app.generalsemantic.com/',
 }))
 
 // app.use((req, res, next) => {
@@ -62,67 +55,25 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT;
 
-// const server = app.listen(
-//   PORT,
-//   console.log(`Server running on PORT ${ PORT }...`.yellow.bold)
-// );
-
 const server = app.listen(
   PORT,
   console.log(`Server running on PORT ${ PORT }...`.yellow.bold)
 );
 
-
-const io = new Server(server, {
-  wsEngine: require("ws").Server,
-  perMessageDeflate: {
-    threshold: 32768
-  },
-  cors: {
-    origin: "https://www.generalsemantic.com",
-    // origin: "http://localhost:3000/",
-    // credentials: true,
-  },
-  parser,
-  serveClient: true,
+const io = require("socket.io")(server, {
   pingTimeout: 60000,
-  upgradeTimeout: 10000,
-  maxHttpBufferSize: 100000000,
-  allowUpgrades: true,
-  transports: ['websocket', 'polling'],
-  allowEIO3: true,
-  cookie: {
-    name: "my-cookie",
-    httpOnly: true,
-    sameSite: "strict",
-    maxAge: 86400
-  }
+  cors: {
+    origin: "https://app.generalsemantic.com/",
+    credentials: true,
+  },
 });
-
-// const io = require("socket.io")(server, {
-//   pingTimeout: 60000,
-//   cors: {
-//     origin: "https://www.generalsemantic.com",
-//     // origin: "http://localhost:3000/",
-//     // credentials: true,
-//   },
-// });
-
-let onlineUsers = [];
 
 io.on("connection", (socket) => {
   console.log("Connected to socket.io");
-
   socket.on("setup", (userData) => {
     socket.join(userData._id);
     socket.emit("connected");
-    if (onlineUsers.includes(userData._id) === false) {
-      onlineUsers.push(userData._id)
-      console.log(onlineUsers)
-    };
   });
-
-  socket.emit("onlineUsers", onlineUsers);
 
   socket.on("join chat", (room) => {
     socket.join(room);
@@ -138,15 +89,13 @@ io.on("connection", (socket) => {
 
     chat.users.forEach((user) => {
       if (user._id == newMessageRecieved.sender._id) return;
+
       socket.in(user._id).emit("message recieved", newMessageRecieved);
     });
   });
 
   socket.off("setup", () => {
     console.log("USER DISCONNECTED");
-    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
     socket.leave(userData._id);
-    io.emit("onlineUsers", onlineUsers);
   });
 });
-
