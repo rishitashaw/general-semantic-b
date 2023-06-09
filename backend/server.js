@@ -1,4 +1,6 @@
 const express = require("express");
+const cookieSession = require("cookie-session");
+const cookieParser = require('cookie-parser');
 const connectDB = require("./config/db");
 const dotenv = require("dotenv");
 const userRoutes = require("./routes/userRoutes");
@@ -12,6 +14,7 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const parser = require("socket.io-msgpack-parser")
 // const app = createServer();
+const crypto = require("crypto");
 
 dotenv.config();
 connectDB();
@@ -20,6 +23,15 @@ const app = express();
 app.use(express.json()); // to accept json data
 
 app.use(helmet.frameguard({ action: "SAMEORIGIN" }));
+
+/* ----- session ----- */
+app.use(cookieSession({
+  name: 'session',
+  keys: [crypto.randomBytes(32).toString('hex')],
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
+app.use(cookieParser());
 
 app.use(cors({
   origin: 'https://www.generalsemantic.com',
